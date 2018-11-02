@@ -3,3 +3,30 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+label{
+  display: flex;
+  flex-direction: column;
+}
+
+.formContainer {
+  width: 300px;
+  display: flex;
+  justify-content: space-between;
+  margin: 200px;
+  background-color: grey;
+  padding: 20px;
+}
+
+input{
+  margin-top: 10px;
+  width: 250px;
+  padding: 10px;
+}
+
+.button{
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px;
+  width: 100px;
+}
