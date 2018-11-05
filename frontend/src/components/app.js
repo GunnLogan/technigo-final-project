@@ -12,13 +12,23 @@ class App extends React.Component {
 
   handleSubmit = event => {
     event.preventDefault()
-    fetch("http://localhost:8080/users", {
+    fetch("http://localhost:8080/login", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(this.state)
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: "bob",
+        password: "password1"
+      })
     })
+      .then(response => response.json())
+      .then(json => {
+        // Login was successful.
+        localstorage.setItem("token", json.token)
+        localstorage.setItem("userId", json.userId)
+      })
+      .catch(err => {
+        console.log("Login failed", err)
+      })
   }
 
   handleUserName = event => {

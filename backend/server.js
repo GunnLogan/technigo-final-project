@@ -38,8 +38,7 @@ const User = mongoose.model("User", {
   },
   password: {
     type: String,
-    required: true,
-    min: 5
+    required: true
   },
   accessToken: {
     type: String,
@@ -47,39 +46,51 @@ const User = mongoose.model("User", {
   }
 })
 
+const firstUser = new User({ name: "Bob", password: bcrypt.hashSync("foobar") })
+firstUser.save().then(() => console.log("Created Bob"))
+
+const secondUser = new User({ name: "Sue", password: bcrypt.hashSync("password1") })
+secondUser.save().then(() => console.log("Created Sue"))
+
 // Example root endpoint to get started with
-app.get("/", (req, res) => {
-  const password = "supersecretpassword"
-  const hash = bcrypt.hashSync(password)
+// app.get("/users/:id", (req, res) => {
+//   const password = "supersecretpassword"
+//   const hash = bcrypt.hashSync(password)
 
-  // bcrypt.compareSync("supersecretpassword", hash) // true
-  // bcrypt.compareSync("incorrectpassword", hash) // false
+// bcrypt.compareSync("supersecretpassword", hash) // true
+// bcrypt.compareSync("incorrectpassword", hash) // false
 
-  res.send(`Signup form api. Here's an example of an encrypted password: ${hash}`)
-})
+//   res.send(`Signup form api. Here's an example of an encrypted password: ${hash}`)
+// })
 
 // Add more endpoints here!
-app.post("/users", (req, res) => {
-  // const { username } = req.body
-  // const password = bcrypt.hashSync(req.body.password)
-  // const { email } = req.body
-  // const user = new User({ username, email, password })
-  //
-  // user.save()
-  //   .then(() => { res.status(201).send("user created") })
-  //   .catch(err => { res.status(400).send(err) })
 
-  User.findOne({ name: req.body.name, password })
+app.post("/login", (req, res) => {
+  User.find({ name: "Bob" }).then(user => {
+    if (bcrypt.compareSync(req.body.password, user.password)) {
+      res.json({ message: "Success!", token: user.accessToken, userId: user.id })
+    } else {
+      res.status(401).json({ message: "Authentication failure" })
+    }
+  })
+})
+
+const findUser = (req, res, next) => {
+  User.findById(req.params.id)
     .then(user => {
-      if (user && bcrypt.compareSync(req.body.password, user.password)) {
-        res.json({ accessToken: user.accessToken })
+      if (user.accessToken === req.headers.token) {
+        req.user = user
+        next()
       } else {
-        res.json({ notFound: true })
+        res.status(401).send("Unauthorized")
       }
     })
-    .catch(err => {
-      res.json(err)
-    })
+}
+
+app.use("/users/:id", findUser)
+
+app.get("/users/:id", (req, res) => {
+  res.json({email:res.user.email})
 })
 
 app.listen(8080, () => console.log("Products API listening on port 8080!"))
