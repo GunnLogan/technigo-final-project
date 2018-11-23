@@ -1,12 +1,13 @@
 {
-  "name": "signup-form-api",
+  "name": "final-project-api",
   "version": "1.0.0",
-  "description": "Signup form api",
-  "repository": "https://github.com/Technigo/assignment-signup-form",
+  "description": "final project api",
+  "repository": "",
   "license": "MIT",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js --exec babel-node",
+    "start": "babel-node server.js",
+    "dev": "nodemon server.js --exec babel-node",
     "lint": "eslint ."
   },
   "dependencies": {
@@ -15,11 +16,11 @@
     "cors": "^2.8.4",
     "express": "^4.16.2",
     "mongoose": "^4.13.7",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
     "eslint-config-technigo": "^1.5.0",
     "nodemon": "^1.14.0"
   }

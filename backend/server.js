@@ -15,7 +15,8 @@ app.use(cors())
 
 // Connect to MongoDB, on the "products-api" database. If the db doesn't
 // exist, mongo will create it.
-mongoose.connect("mongodb://localhost/signup-form-api", { useMongoClient: true })
+const mongoServer = process.env.MONGO_URL || "mongodb://localhost/myDb"
+mongoose.connect(mongoServer, { useNewUrlParser: true })
 
 // This makes mongo use ES6 promises, instead of its own implementation
 mongoose.Promise = Promise
@@ -28,37 +29,33 @@ mongoose.connection.once("open", () => console.log("Connected to mongodb"))
 // Define a model here.
 
 const User = mongoose.model("User", {
-  username: {
+  text: {
     type: String,
     required: true
   },
-  email: {
+  mood: {
     type: String,
     required: true
   },
-  password: {
-    type: String,
-    required: true
-  },
-  accessToken: {
-    type: String,
-    default: () => uuid()
-  }
+  // key: {
+  //   type: String,
+  //   default: () => uuid()
+  // }
 })
 
-const firstUser = new User({ name: "Bob", password: bcrypt.hashSync("foobar") })
-firstUser.save().then(() => console.log("Created Bob"))
-
-const secondUser = new User({ name: "Sue", password: bcrypt.hashSync("password1") })
-secondUser.save().then(() => console.log("Created Sue"))
+// const firstUser = new User({ name: "Bob", password: bcrypt.hashSync("foobar") })
+// firstUser.save().then(() => console.log("Created Bob"))
+//
+// const secondUser = new User({ name: "Sue", password: bcrypt.hashSync("password1") })
+// secondUser.save().then(() => console.log("Created Sue"))
 
 // Example root endpoint to get started with
 // app.get("/users/:id", (req, res) => {
 //   const password = "supersecretpassword"
 //   const hash = bcrypt.hashSync(password)
 
-// bcrypt.compareSync("supersecretpassword", hash) // true
-// bcrypt.compareSync("incorrectpassword", hash) // false
+bcrypt.compareSync("supersecretpassword", hash) // true
+bcrypt.compareSync("incorrectpassword", hash) // false
 
 //   res.send(`Signup form api. Here's an example of an encrypted password: ${hash}`)
 // })
@@ -90,7 +87,11 @@ const findUser = (req, res, next) => {
 app.use("/users/:id", findUser)
 
 app.get("/users/:id", (req, res) => {
-  res.json({email:res.user.email})
+  res.json({ email: res.user.email })
 })
 
+const port = process.env.PORT || 8080
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`)
+})
 app.listen(8080, () => console.log("Products API listening on port 8080!"))
